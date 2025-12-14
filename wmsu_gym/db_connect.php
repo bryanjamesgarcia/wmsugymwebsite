@@ -1,0 +1,12 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "db_wmsu_gym";
+
+$conn = new mysqli($servername, $username, $password, $database);
+
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
+}
+?>
