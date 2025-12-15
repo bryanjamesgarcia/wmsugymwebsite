@@ -7,7 +7,7 @@
 define('SMTP_HOST', 'smtp.gmail.com'); // Change to your SMTP server
 define('SMTP_PORT', 587); // Usually 587 for TLS, 465 for SSL
 define('SMTP_USERNAME', 'wmsugymreservationsystem@gmail.com'); // Your email address
-define('SMTP_PASSWORD', ''); // Your email password or app password
+define('SMTP_PASSWORD', 'lnccjyzfribnbtmr'); // Your email password or app password
 define('SMTP_ENCRYPTION', 'tls'); // 'tls' or 'ssl'
 define('FROM_EMAIL', 'wmsugymreservationsystem@gmail.com'); // Sender email
 define('FROM_NAME', 'WMSU Gym Reservation System'); // Sender name
@@ -137,5 +137,4 @@ function getAccountApprovalEmailTemplate($name, $email, $password) {
     </html>
     ";
 }
-
 ?>
