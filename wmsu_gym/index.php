@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_account'])) {
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 30px 30px; opacity: 0.3;"></div>
         <div style="max-width: 800px; margin: 0 auto; position: relative; z-index: 1;">
             <h2 style="margin: 0 0 20px 0; font-size: 42px; font-weight: 700; line-height: 1.2;">Welcome to WMSU Gym</h2>
-            <p style="margin: 0 0 35px 0; font-size: 20px; opacity: 0.95; line-height: 1.6;">Reserve your gym slot online. Fast, easy, and efficient facility management for students, faculty, and staff.</p>
+            <p style="margin: 0 0 35px 0; font-size: 20px; opacity: 0.95; line-height: 1.6;">Reserve your gym slot online. Fast, easy, and efficient facility management.</p>
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                 <a href="#request-account" style="background: white; color: #8B0000; padding: 16px 36px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';">
                     📝 Request Account
