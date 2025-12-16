@@ -76,8 +76,26 @@ if (isset($_GET['req_action'], $_GET['req_id'])) {
             sendEmail($req['email'], $req['name'], "Your WMSU Gym Reservation System Account Has Been Approved", $emailBody);
         }
     } elseif ($req_action === 'decline') {
+    // Fetch request details before declining
+    $req = $conn->query("SELECT * FROM account_requests WHERE id=$req_id AND status='Pending'")->fetch_assoc();
+    
+    if ($req) {
+        // Update status to Declined
         $conn->query("UPDATE account_requests SET status='Declined' WHERE id=$req_id");
+        
+        // Send decline email notification
+        $emailBody = getAccountDeclineEmailTemplate($req['name'], $req['email'], $req['department']);
+        $emailSent = sendEmail($req['email'], $req['name'], "WMSU Gym Reservation System - Account Request Update", $emailBody);
+        
+        if ($emailSent) {
+            $_SESSION['email_status'] = 'success';
+            $_SESSION['email_message'] = "Account request declined and notification email sent to {$req['email']}";
+        } else {
+            $_SESSION['email_status'] = 'warning';
+            $_SESSION['email_message'] = "Account request declined but email failed to send to {$req['email']}.";
+        }
     }
+}
 
     header("Location: admin.php");
     exit();
@@ -433,7 +451,7 @@ $users = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
                             <div class="action-buttons">
                                 <?php if($r['status'] == 'Pending'): ?>
                                 <a href="?req_action=approve&req_id=<?= $r['id']; ?>" class="btn-action btn-approve">✅ Approve</a>
-                                <a href="?req_action=decline&req_id=<?= $r['id']; ?>" class="btn-action btn-decline">❌ Decline</a>
+                                <a href="?req_action=decline&req_id=<?= $r['id']; ?>" class="btn-action btn-decline" onclick="return confirm('Decline this account request for <?= addslashes($r['name']); ?>?\n\nA notification email will be sent to the applicant.');">❌ Decline</a>
                                 <?php endif; ?>
                                 <button onclick="confirmDelete('account_request', <?= $r['id']; ?>, '<?= addslashes($r['name']); ?>')" class="btn-action btn-delete">🗑️</button>
                             </div>
