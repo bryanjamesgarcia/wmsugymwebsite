@@ -131,7 +131,88 @@ function getAccountApprovalEmailTemplate($name, $email, $password) {
                 <p>© {$year} Western Mindanao State University</p>
                 <p>WMSU Gym Reservation System</p>
                 <p style='color: #999; font-size: 11px;'>This is an automated message. Please do not reply to this email.</p>
-            </div>a
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
+// Email template for account decline
+function getAccountDeclineEmailTemplate($name, $email, $department) {
+    $contact_url = "http://" . $_SERVER['HTTP_HOST'] . "/index.php"; // Adjust as needed
+    $year = date('Y');
+    
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+            .header { background-color: #6c757d; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+            .content { background-color: white; padding: 30px; border-radius: 0 0 5px 5px; }
+            .info-box { background-color: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; margin: 20px 0; }
+            .button { display: inline-block; background-color: #8B0000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #777; font-size: 12px; }
+            .notice { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1> Account Request Update</h1>
+                <p>WMSU Gym Reservation System</p>
+            </div>
+            
+            <div class='content'>
+                <h2>Hello, {$name}</h2>
+                
+                <p>Thank you for your interest in the WMSU Gym Reservation System.</p>
+                
+                <p>We regret to inform you that your account request has not been approved at this time.</p>
+                
+                <div class='info-box'>
+                    <h3 style='margin-top: 0; color: #1976D2;'> Your Request Details</h3>
+                    <p><strong>Name:</strong> {$name}</p>
+                    <p><strong>Email:</strong> {$email}</p>
+                    <p><strong>Department:</strong> {$department}</p>
+                    <p><strong>Status:</strong> <span style='color: #dc3545; font-weight: bold;'>Declined</span></p>
+                </div>
+                
+                <h3> Possible Reasons for Decline:</h3>
+                <ul style='line-height: 1.8;'>
+                    <li>Incomplete or inaccurate information provided</li>
+                    <li>Request does not meet current system requirements</li>
+                    <li>Department affiliation could not be verified</li>
+                    <li>Duplicate account request detected</li>
+                    <li>System capacity or policy restrictions</li>
+                </ul>
+                
+                <div class='notice'>
+                    <h3 style='margin-top: 0; color: #856404;'> What You Can Do:</h3>
+                    <p style='margin: 10px 0;'>If you believe this decision was made in error or if you would like to discuss your request further, please:</p>
+                    <ul style='margin: 10px 0; padding-left: 20px;'>
+                        <li>Contact the WMSU Gym Administration office</li>
+                        <li>Email us with your concerns and correct information</li>
+                        <li>Submit a new request with updated details</li>
+                        <li>Speak with your department head for assistance</li>
+                    </ul>
+                </div>
+                
+                <div style='text-align: center;'>
+                    <a href='{$contact_url}' class='button'>Return to Homepage</a>
+                </div>
+                
+                <p style='margin-top: 30px; color: #666; font-size: 14px;'>We appreciate your understanding. The WMSU Gym Reservation System is committed to providing quality service to our university community.</p>
+            </div>
+            
+            <div class='footer'>
+                <p>© {$year} Western Mindanao State University</p>
+                <p>WMSU Gym Reservation System</p>
+                <p style='color: #999; font-size: 11px;'>This is an automated message. Please do not reply to this email.</p>
+            </div>
         </div>
     </body>
     </html>
