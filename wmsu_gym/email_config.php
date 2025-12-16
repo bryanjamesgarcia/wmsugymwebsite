@@ -2,21 +2,15 @@
 // Email Configuration for WMSU Gym Reservation System
 
 // SMTP Configuration (using PHPMailer)
-// You can use Gmail, Outlook, or your institution's SMTP server
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USERNAME', 'wmsugymreservationsystem@gmail.com');
+define('SMTP_PASSWORD', 'lnccjyzfribnbtmr');
+define('SMTP_ENCRYPTION', 'tls');
+define('FROM_EMAIL', 'wmsugymreservationsystem@gmail.com');
+define('FROM_NAME', 'WMSU Gym Reservation System');
 
-define('SMTP_HOST', 'smtp.gmail.com'); // Change to your SMTP server
-define('SMTP_PORT', 587); // Usually 587 for TLS, 465 for SSL
-define('SMTP_USERNAME', 'wmsugymreservationsystem@gmail.com'); // Your email address
-define('SMTP_PASSWORD', 'lnccjyzfribnbtmr'); // Your email password or app password
-define('SMTP_ENCRYPTION', 'tls'); // 'tls' or 'ssl'
-define('FROM_EMAIL', 'wmsugymreservationsystem@gmail.com'); // Sender email
-define('FROM_NAME', 'WMSU Gym Reservation System'); // Sender name
-
-// Load Composer autoloader and import PHPMailer classes
-require_once __DIR__ . '/vendor/autoload.php'; // Make sure to install PHPMailer via Composer
-
-// Use fully-qualified class names below to avoid static-analysis issues when the
-// Composer autoloader is not available to the analyzer.
+require_once __DIR__ . '/vendor/autoload.php';
 
 // Function to send email using PHPMailer
 function sendEmail($to_email, $to_name, $subject, $body) {
@@ -45,7 +39,6 @@ function sendEmail($to_email, $to_name, $subject, $body) {
         $mail->send();
         return true;
     } catch (\PHPMailer\PHPMailer\Exception $e) {
-        // Use the caught exception variable and also include PHPMailer error info
         error_log("Email Error: {$mail->ErrorInfo}; Exception: " . $e->getMessage());
         return false;
     }
@@ -62,7 +55,7 @@ function sendSimpleEmail($to_email, $subject, $body) {
 
 // Email template for account approval
 function getAccountApprovalEmailTemplate($name, $email, $password) {
-    $login_url = "http://" . $_SERVER['HTTP_HOST'] . "/login.php"; // Adjust as needed
+    $login_url = "http://" . $_SERVER['HTTP_HOST'] . "/login.php";
     $year = date('Y');
     
     return "
@@ -140,7 +133,7 @@ function getAccountApprovalEmailTemplate($name, $email, $password) {
 
 // Email template for account decline
 function getAccountDeclineEmailTemplate($name, $email, $department) {
-    $contact_url = "http://" . $_SERVER['HTTP_HOST'] . "/index.php"; // Adjust as needed
+    $contact_url = "http://" . $_SERVER['HTTP_HOST'] . "/index.php";
     $year = date('Y');
     
     return "
@@ -206,6 +199,164 @@ function getAccountDeclineEmailTemplate($name, $email, $department) {
                 </div>
                 
                 <p style='margin-top: 30px; color: #666; font-size: 14px;'>We appreciate your understanding. The WMSU Gym Reservation System is committed to providing quality service to our university community.</p>
+            </div>
+            
+            <div class='footer'>
+                <p>© {$year} Western Mindanao State University</p>
+                <p>WMSU Gym Reservation System</p>
+                <p style='color: #999; font-size: 11px;'>This is an automated message. Please do not reply to this email.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
+// NEW: Email template for reservation approval
+function getReservationApprovalEmailTemplate($name, $email, $date, $start_time, $end_time, $num_people) {
+    $dashboard_url = "http://" . $_SERVER['HTTP_HOST'] . "/dashboard.php";
+    $year = date('Y');
+    $formatted_date = date('F d, Y', strtotime($date));
+    $formatted_start = date('h:i A', strtotime($start_time));
+    $formatted_end = date('h:i A', strtotime($end_time));
+    
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+            .header { background-color: #28a745; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+            .content { background-color: white; padding: 30px; border-radius: 0 0 5px 5px; }
+            .reservation-details { background-color: #d4edda; padding: 20px; border-left: 4px solid #28a745; margin: 20px 0; border-radius: 5px; }
+            .button { display: inline-block; background-color: #8B0000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .info-box { background-color: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #777; font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1>✅ Reservation Approved!</h1>
+                <p>WMSU Gym Reservation System</p>
+            </div>
+            
+            <div class='content'>
+                <h2>Hello, {$name}!</h2>
+                
+                <p>Great news! Your gym reservation has been <strong style='color: #28a745;'>APPROVED</strong> by the administrator.</p>
+                
+                <div class='reservation-details'>
+                    <h3 style='margin-top: 0; color: #155724;'>📋 Reservation Details</h3>
+                    <p style='margin: 8px 0;'><strong>Date:</strong> {$formatted_date}</p>
+                    <p style='margin: 8px 0;'><strong>Time:</strong> {$formatted_start} - {$formatted_end}</p>
+                    <p style='margin: 8px 0;'><strong>Number of People:</strong> {$num_people}</p>
+                    <p style='margin: 8px 0;'><strong>Status:</strong> <span style='color: #28a745; font-weight: bold;'>APPROVED</span></p>
+                </div>
+                
+                <div class='info-box'>
+                    <h3 style='margin-top: 0; color: #1976D2;'>📌 Important Reminders</h3>
+                    <ul style='margin: 10px 0; padding-left: 20px;'>
+                        <li>Please arrive on time for your reservation</li>
+                        <li>Follow all gymnasium rules and regulations</li>
+                        <li>Wear appropriate sports attire</li>
+                        <li>Maximum capacity: {$num_people} people for this reservation</li>
+                        <li>If you need to cancel or reschedule, please do so through your dashboard</li>
+                    </ul>
+                </div>
+                
+                <div style='text-align: center;'>
+                    <a href='{$dashboard_url}' class='button'>View My Dashboard</a>
+                </div>
+                
+                <p style='margin-top: 20px;'>We look forward to seeing you at the WMSU Gymnasium!</p>
+                
+                <p style='color: #666; font-size: 14px;'>If you have any questions or need to make changes, please log in to your account or contact the gym administrator.</p>
+            </div>
+            
+            <div class='footer'>
+                <p>© {$year} Western Mindanao State University</p>
+                <p>WMSU Gym Reservation System</p>
+                <p style='color: #999; font-size: 11px;'>This is an automated message. Please do not reply to this email.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
+// NEW: Email template for reservation decline
+function getReservationDeclineEmailTemplate($name, $email, $date, $start_time, $end_time, $num_people) {
+    $dashboard_url = "http://" . $_SERVER['HTTP_HOST'] . "/dashboard.php";
+    $reserve_url = "http://" . $_SERVER['HTTP_HOST'] . "/reserve.php";
+    $year = date('Y');
+    $formatted_date = date('F d, Y', strtotime($date));
+    $formatted_start = date('h:i A', strtotime($start_time));
+    $formatted_end = date('h:i A', strtotime($end_time));
+    
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+            .header { background-color: #dc3545; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+            .content { background-color: white; padding: 30px; border-radius: 0 0 5px 5px; }
+            .reservation-details { background-color: #f8d7da; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0; border-radius: 5px; }
+            .button { display: inline-block; background-color: #8B0000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .info-box { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #777; font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <div class='container'>
+            <div class='header'>
+                <h1>❌ Reservation Declined</h1>
+                <p>WMSU Gym Reservation System</p>
+            </div>
+            
+            <div class='content'>
+                <h2>Hello, {$name}</h2>
+                
+                <p>We regret to inform you that your gym reservation has been <strong style='color: #dc3545;'>DECLINED</strong> by the administrator.</p>
+                
+                <div class='reservation-details'>
+                    <h3 style='margin-top: 0; color: #721c24;'>📋 Declined Reservation Details</h3>
+                    <p style='margin: 8px 0;'><strong>Date:</strong> {$formatted_date}</p>
+                    <p style='margin: 8px 0;'><strong>Time:</strong> {$formatted_start} - {$formatted_end}</p>
+                    <p style='margin: 8px 0;'><strong>Number of People:</strong> {$num_people}</p>
+                    <p style='margin: 8px 0;'><strong>Status:</strong> <span style='color: #dc3545; font-weight: bold;'>DECLINED</span></p>
+                </div>
+                
+                <div class='info-box'>
+                    <h3 style='margin-top: 0; color: #856404;'>ℹ️ Possible Reasons for Decline:</h3>
+                    <ul style='margin: 10px 0; padding-left: 20px;'>
+                        <li>Time slot conflict with another reservation</li>
+                        <li>Gymnasium maintenance scheduled during requested time</li>
+                        <li>Capacity exceeded for the requested time slot</li>
+                        <li>Request does not meet facility usage guidelines</li>
+                        <li>Administrative or scheduling conflicts</li>
+                    </ul>
+                </div>
+                
+                <h3>🔄 What's Next?</h3>
+                <p>Don't worry! You can submit a new reservation request:</p>
+                <ul style='line-height: 1.8;'>
+                    <li>Choose a different date or time slot</li>
+                    <li>Check available time slots before submitting</li>
+                    <li>Contact the gym administrator for more information</li>
+                    <li>Review the gym's operating hours and guidelines</li>
+                </ul>
+                
+                <div style='text-align: center;'>
+                    <a href='{$reserve_url}' class='button'>Make New Reservation</a>
+                </div>
+                
+                <p style='margin-top: 20px; color: #666; font-size: 14px;'>If you have questions about why your reservation was declined, please contact the gymnasium administrator or check your dashboard for more information.</p>
             </div>
             
             <div class='footer'>
