@@ -37,23 +37,79 @@ if (isset($_GET['delete_type'], $_GET['delete_id'])) {
     exit();
 }
 
-// Handle reservation actions
+// Handle reservation actions (UPDATED WITH EMAIL NOTIFICATIONS)
 if (isset($_GET['action'], $_GET['id'])) {
     $id = (int)$_GET['id'];
     $action = $_GET['action'];
 
-    if ($action === 'approve') {
-        $conn->query("UPDATE reservations SET status='Approved' WHERE id=$id");
-    } elseif ($action === 'decline') {
-        $conn->query("UPDATE reservations SET status='Declined' WHERE id=$id");
-    } elseif ($action === 'cancel') {
-        $conn->query("UPDATE reservations SET status='Cancelled' WHERE id=$id");
+    // Fetch reservation and user details
+    $reservation = $conn->query("SELECT r.*, u.name, u.email FROM reservations r JOIN users u ON r.user_id = u.id WHERE r.id = $id")->fetch_assoc();
+
+    if ($reservation) {
+        if ($action === 'approve') {
+            $conn->query("UPDATE reservations SET status='Approved' WHERE id=$id");
+            
+            // Send approval email
+            $emailBody = getReservationApprovalEmailTemplate(
+                $reservation['name'],
+                $reservation['email'],
+                $reservation['date'],
+                $reservation['start_time'],
+                $reservation['end_time'],
+                $reservation['num_people']
+            );
+            
+            $emailSent = sendEmail(
+                $reservation['email'],
+                $reservation['name'],
+                "✅ Your WMSU Gym Reservation Has Been Approved",
+                $emailBody
+            );
+            
+            if ($emailSent) {
+                $_SESSION['email_status'] = 'success';
+                $_SESSION['email_message'] = "Reservation approved and notification email sent to {$reservation['email']}";
+            } else {
+                $_SESSION['email_status'] = 'warning';
+                $_SESSION['email_message'] = "Reservation approved but email failed to send to {$reservation['email']}.";
+            }
+            
+        } elseif ($action === 'decline') {
+            $conn->query("UPDATE reservations SET status='Declined' WHERE id=$id");
+            
+            // Send decline email
+            $emailBody = getReservationDeclineEmailTemplate(
+                $reservation['name'],
+                $reservation['email'],
+                $reservation['date'],
+                $reservation['start_time'],
+                $reservation['end_time'],
+                $reservation['num_people']
+            );
+            
+            $emailSent = sendEmail(
+                $reservation['email'],
+                $reservation['name'],
+                "❌ WMSU Gym Reservation Update - Declined",
+                $emailBody
+            );
+            
+            if ($emailSent) {
+                $_SESSION['email_status'] = 'success';
+                $_SESSION['email_message'] = "Reservation declined and notification email sent to {$reservation['email']}";
+            } else {
+                $_SESSION['email_status'] = 'warning';
+                $_SESSION['email_message'] = "Reservation declined but email failed to send to {$reservation['email']}.";
+            }
+            
+        } elseif ($action === 'cancel') {
+            $conn->query("UPDATE reservations SET status='Cancelled' WHERE id=$id");
+        }
     }
 
     header("Location: admin.php");
     exit();
 }
-
 // Handle account request approval/decline
 if (isset($_GET['req_action'], $_GET['req_id'])) {
     $req_id = (int)$_GET['req_id'];
@@ -486,8 +542,8 @@ $users = $conn->query("SELECT * FROM users ORDER BY created_at DESC");
                         <td class="no-print">
                             <div class="action-buttons">
                                 <?php if($row['status'] == 'Pending'): ?>
-                                <a href="?action=approve&id=<?= $row['id']; ?>" class="btn-action btn-approve">Approve</a>
-                                <a href="?action=decline&id=<?= $row['id']; ?>" class="btn-action btn-decline">Decline</a>
+                                <a href="?action=approve&id=<?= $row['id']; ?>" class="btn-action btn-approve" onclick="return confirm('Approve this reservation?\n\nAn email notification will be sent to:\n<?= addslashes($row['email']); ?>');">Approve</a>
+<a href="?action=decline&id=<?= $row['id']; ?>" class="btn-action btn-decline" onclick="return confirm('Decline this reservation?\n\nAn email notification will be sent to:\n<?= addslashes($row['email']); ?>');">Decline</a>
                                 <?php elseif($row['status'] == 'Approved'): ?>
                                 <a href="?action=cancel&id=<?= $row['id']; ?>" class="btn-action btn-decline">Cancel</a>
                                 <?php endif; ?>
